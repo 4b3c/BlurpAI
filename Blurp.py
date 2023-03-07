@@ -35,7 +35,7 @@ class blurp:
 			self.turn("west")
 
 	def move_with_rotation(self, forward, backward, rotation):
-qqqqq
+
 		self.pos[1] += self.speed * forward * math.cos(math.pi * rotation)
 		self.pos[0] += self.speed * forward * math.sin(math.pi * rotation)
 
