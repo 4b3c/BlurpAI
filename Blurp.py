@@ -14,11 +14,14 @@ class blurp:
 		self.facing = "south"
 		self.sprite = sprites[self.facing]
 		self.speed = 5
+		self.ray_len = 10
+
 
 	def turn(self, direction):
 		if direction != self.facing:
 			self.facing = direction
 			self.sprite = sprites[self.facing]
+
 
 	def move_with_directions(self, north, south, east, west):
 		if north:
@@ -34,13 +37,39 @@ class blurp:
 			self.pos[0] -= self.speed
 			self.turn("west")
 
+
 	def move_with_rotation(self, forward, backward, rotation):
+		change_x = self.speed * math.sin(math.pi * rotation)
+		change_y = self.speed * math.cos(math.pi * rotation)
 
-		self.pos[1] += self.speed * forward * math.cos(math.pi * rotation)
-		self.pos[0] += self.speed * forward * math.sin(math.pi * rotation)
+		self.pos[0] += (change_x * forward) - (change_x * backward)
+		self.pos[1] += (change_y * forward) - (change_y * backward)
 
+		if rotation < -0.75:
+			self.turn("north")
+		elif rotation < -0.25:
+			self.turn("west")
+		elif rotation < 0.25:
+			self.turn("south")
+		elif rotation < 0.75:
+			self.turn("east")
+		elif rotation < 1:
+			self.turn("north")
 
 	def draw_blurp(self, window, forward, backward, rotation):
 		self.move_with_rotation(int(forward), int(backward), rotation)
 
 		window.blit(self.sprite, self.pos)
+
+		ray_endpoint_pos = [self.speed * math.sin(math.pi * (rotation + 0.18)), \
+		self.speed * math.cos(math.pi * (rotation + 0.18))]
+		ray_endpoint_neg = [self.speed * math.sin(math.pi * (rotation - 0.18)), \
+		self.speed * math.cos(math.pi * (rotation - 0.18))]
+
+		x_mid = self.pos[0] + 9
+		y_mid = self.pos[1] + 13
+
+		pygame.draw.line(window, (255, 255, 255), (x_mid, y_mid), \
+			(x_mid + ray_endpoint_pos[0] * self.ray_len, y_mid + ray_endpoint_pos[1] * self.ray_len))
+		pygame.draw.line(window, (255, 255, 255), (x_mid, y_mid), \
+			(x_mid + ray_endpoint_neg[0] * self.ray_len, y_mid + ray_endpoint_neg[1] * self.ray_len))
