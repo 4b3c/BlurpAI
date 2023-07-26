@@ -1,12 +1,15 @@
 import pygame as pyg
-from Blurp import blurp
+from Blurp import Blurp
+import time
 
 pyg.init()
 
 window = pyg.display.set_mode((800, 500))
 clock = pyg.time.Clock()
 
-brodie = blurp("brodie", [200, 200])
+brotein_shakes = [Blurp([200, 200]) for i in range(30)]
+start_time = time.time()
+print(start_time)
 
 while True:
 	window.fill((10, 10, 40))
@@ -18,7 +21,10 @@ while True:
 	keys = pyg.key.get_pressed()
 	mouse_pos = pyg.mouse.get_pos()
 
-	brodie.draw_blurp(window, int(keys[pyg.K_w] - keys[pyg.K_s]), (mouse_pos[0] - 400) / 400)
+	for brodie in brotein_shakes:
+		brodie.draw_blurp(window)
+		if brodie.pos[0] < 0 or brodie.pos[0] > 800 or brodie.pos[1] < 0 or brodie.pos[1] > 500:
+			brotein_shakes.remove(brodie)
 
 	pyg.display.update()
 	clock.tick(60);
