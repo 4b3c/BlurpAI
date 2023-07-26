@@ -12,11 +12,15 @@ GRAY = (100, 100, 100)
 RED = (250, 0, 0)
 
 class Blurp:
-	def __init__(self, pos):
+	def __init__(self, pos, parents=None):
 		self.pos = pos
-		self.brain = BlurpBrain()
 		self.facing = "south"
 		self.sprite = sprites[self.facing]
+
+		if parents == None:
+			self.brain = BlurpBrain()
+		else:
+			self.brain = BlurpBrain(parents)
 
 		self.speed = (ord(self.brain.DNA[0]) - 65) / 2
 		self.ray_len = (ord(self.brain.DNA[1]) - 65) / 2
@@ -26,6 +30,7 @@ class Blurp:
 		self.ray_det = [False for i in range(-self.ray_range, self.ray_range, self.ray_sep)]
 		self.rays = len(self.ray_det)
 		self.brain.add_rays(self.rays)
+
 
 
 	def turn(self, direction):

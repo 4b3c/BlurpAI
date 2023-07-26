@@ -8,10 +8,15 @@ class BlurpBrain:
 		if parents == None:
 			basics = ''.join(random.choice(letters) for _ in range(4))
 			self.DNA = basics + '_'
+		else:
+			self.DNA = ''.join(random.choice(parents[0].DNA[i] + parents[1].DNA[i] for i in range(4)))
+			self.DNA += '_'
+			self.DNA += ''.join(random.choice(parents[0].DNA[i] + parents[1].DNA[i] for i in range(5, len(parents[0].DNA))))
+
 
 	def add_rays(self, rays):
 		self.rays = rays
-		self.DNA += ''.join(random.choice(letters) for _ in range(rays * 2)) + '_'
+		self.DNA += ''.join(random.choice(letters) for _ in range(rays * 2))
 		self.move = 0
 		self.direction = 1
 

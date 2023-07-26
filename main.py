@@ -1,6 +1,6 @@
 import pygame as pyg
 from Blurp import Blurp
-import time
+import time, random
 
 pyg.init()
 
@@ -28,3 +28,9 @@ while True:
 
 	pyg.display.update()
 	clock.tick(60);
+
+	if time.time() > start_time + 2:
+		for i in range(30 - len(brotein_shakes)):
+			baby_brotein_shakes = [Blurp([200, 200], parents=[random.choice(brotein_shakes).brain, random.choice(brotein_shakes).brain])]
+			print(baby_brotein_shakes)
+			quit()
