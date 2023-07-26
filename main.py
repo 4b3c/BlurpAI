@@ -18,7 +18,7 @@ while True:
 	keys = pyg.key.get_pressed()
 	mouse_pos = pyg.mouse.get_pos()
 
-	brodie.draw_blurp(window, keys[pyg.K_w], keys[pyg.K_s], (mouse_pos[0] - 400) / 400)
+	brodie.draw_blurp(window, int(keys[pyg.K_w] - keys[pyg.K_s]), (mouse_pos[0] - 400) / 400)
 
 	pyg.display.update()
 	clock.tick(60);
