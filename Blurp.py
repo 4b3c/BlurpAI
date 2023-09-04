@@ -1,5 +1,4 @@
-import pygame, math
-from BlurpBrain import BlurpBrain
+import pygame, math, random, string, time
 
 sprites = {
 	"north": pygame.image.load("Sprites/Blurp/BlurpNorth.png"),
@@ -11,24 +10,41 @@ sprites = {
 GRAY = (100, 100, 100)
 RED = (250, 0, 0)
 
+letters = string.ascii_uppercase
+
+def genes_new():
+	basics = ''.join(random.choice(letters) for _ in range(2))
+	responses = ''.join(random.choice(letters) for _ in range(12))
+	return basics + responses
+
+def genes_parents(parents):
+	genes = ""
+	for char in range(14):
+		genes += ''.join(random.choices(parents[0].genes[char] + parents[1].genes[char] + random.choice(letters), weights=(40, 40, 20)))
+	return genes
+
 class Blurp:
-	def __init__(self, pos, time, parents=None):
+	def __init__(self, pos, parents=None):
 		self.pos = pos
-		self.last_pos = [200, 200]
+		self.velocity = 0
+		self.direction = 1
 		self.facing = "south"
 		self.sprite = sprites[self.facing]
 		self.ray_range = 60
 		self.ray_sep = 10
-		self.ray_det = [False for i in range(6)]
-		self.start_time = time
+		self.ray_det = [1 for i in range(6)]
+		self.start_time = time.time()
+		self.displacement = 0
+		self.survival_time = 0
+		self.fitness = 0
 
 		if parents == None:
-			self.brain = BlurpBrain()
+			self.genes = genes_new()
 		else:
-			self.brain = BlurpBrain(parents)
+			self.genes = genes_parents(parents)
 
-		self.speed = (ord(self.brain.DNA[0]) - 60) / 2
-		self.ray_len = (ord(self.brain.DNA[1]) - 65) / 2
+		self.speed = (ord(self.genes[0]) - 60) / 2
+		self.ray_len = (ord(self.genes[1]) - 65) / 2
 
 
 	def turn(self, direction):
@@ -36,27 +52,42 @@ class Blurp:
 			self.facing = direction
 			self.sprite = sprites[self.facing]
 
-	def move(self, move, rotation):
-		change_x = self.speed * math.sin(math.pi * rotation)
-		change_y = self.speed * math.cos(math.pi * rotation)
+	def move(self):
+		change_x = self.speed * math.sin(math.pi * self.direction)
+		change_y = self.speed * math.cos(math.pi * self.direction)
+		real_change_x = (change_x * self.velocity) - (change_x * -self.velocity)
+		real_change_y = (change_y * self.velocity) - (change_y * -self.velocity)
+		
+		self.displacement += math.sqrt(real_change_x**2 + real_change_y**2)
+		self.survival_time = time.time() - self.start_time
+		self.fitness = (self.displacement / 100) * (self.survival_time / 10)
 
-		self.pos[0] += (change_x * move) - (change_x * -move)
-		self.pos[1] += (change_y * move) - (change_y * -move)
+		self.pos[0] += real_change_x
+		self.pos[1] += real_change_y
 
-		if rotation < -0.75:
+		if self.direction < -0.75:
 			self.turn("north")
-		elif rotation < -0.25:
+		elif self.direction < -0.25:
 			self.turn("west")
-		elif rotation < 0.25:
+		elif self.direction < 0.25:
 			self.turn("south")
-		elif rotation < 0.75:
+		elif self.direction < 0.75:
 			self.turn("east")
-		elif rotation < 1:
+		elif self.direction < 1:
 			self.turn("north")
+
+	def think(self):
+		for count, ray in enumerate(self.ray_det):
+			ray_gene = (ord(self.genes[1 + count]) - 65 - 13) / 10000
+			self.velocity += (int(ray) - 0.5) * ray_gene
+
+		for count, ray in enumerate(self.ray_det):
+			ray_gene = (ord(self.genes[1 + 6 + count]) - 65 - 13) / 10000
+			self.direction += (int(ray) - 0.5) * ray_gene
 
 	def draw_blurp(self, window):
-		ray_endpoint_pos = [[self.ray_len * math.sin(math.pi * (self.brain.direction + offset / 100)), \
-		self.ray_len * math.cos(math.pi * (self.brain.direction + offset / 100))] for offset in range(0, 60, 10)]
+		ray_endpoint_pos = [[self.ray_len * math.sin(math.pi * (self.direction + offset / 100)), \
+		self.ray_len * math.cos(math.pi * (self.direction + offset / 100))] for offset in range(0, 60, 10)]
 
 		x_mid = self.pos[0] + 9
 		y_mid = self.pos[1] + 13
@@ -65,12 +96,12 @@ class Blurp:
 			if x_mid + end_point[0] * self.ray_len < 0 or x_mid + end_point[0] * self.ray_len > 800\
 			or y_mid + end_point[1] * self.ray_len < 0 or y_mid + end_point[1] * self.ray_len > 500:
 				color = RED
-				self.ray_det[count] = True
+				self.ray_det[count] = 0
 			else:
 				color = GRAY
-				self.ray_det[count] = False
+				self.ray_det[count] = 1
 			pygame.draw.line(window, color, (x_mid, y_mid), (x_mid + end_point[0] * self.ray_len, y_mid + end_point[1] * self.ray_len))
 
 		window.blit(self.sprite, self.pos)
-		self.brain.think(self.ray_det)
-		self.move(self.brain.move, self.brain.direction)
+		self.think()
+		self.move()

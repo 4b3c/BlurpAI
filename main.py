@@ -8,7 +8,7 @@ window = pyg.display.set_mode((800, 500))
 clock = pyg.time.Clock()
 
 start_time = time.time()
-brotein_shakes = [Blurp([200, 200], time.time()) for i in range(30)]
+brotein_shakes = [Blurp([random.randint(100, 700), random.randint(100, 400)]) for i in range(30)]
 
 while True:
 	window.fill((10, 10, 40))
@@ -23,24 +23,26 @@ while True:
 	for brodie in brotein_shakes:
 		brodie.draw_blurp(window)
 		if brodie.pos[0] < 0 or brodie.pos[0] > 800 or brodie.pos[1] < 0 or brodie.pos[1] > 500:
-			print(time.time() - brodie.start_time, brodie.brain.DNA)
 			brotein_shakes.remove(brodie)
+		# elif brodie.pos[0] < mouse_pos[0] and brodie.pos[0] + 30 > mouse_pos[0] and brodie.pos[1] < mouse_pos[1] and brodie.pos[1] + 30 > mouse_pos[1]:
+		# 	print(brodie.displacement)
 
 
 	pyg.display.update()
 	clock.tick(60);
 
-	if time.time() > start_time + 5:
+	if time.time() > start_time + 10:
 		for brodie in brotein_shakes:
-			if abs(brodie.pos[0] - 200) < 10 and abs(brodie.pos[1] - 200) < 10:
+			# print(brodie.displacement)
+			if brodie.displacement < 50:
 				brotein_shakes.remove(brodie)
-			# elif abs(brodie.pos[0] - brodie.last_pos[0]) < 0.01 and abs(brodie.pos[1] - brodie.last_pos[1]) < 0.01:
-			# 	brotein_shakes.remove(brodie)
-			else:
-				brodie.last_pos = brodie.pos
 
-		baby_brotein_shakes = [Blurp([200, 200], time.time(), parents=[random.choice(brotein_shakes).brain, \
-			random.choice(brotein_shakes).brain]) for _ in range(30 - len(brotein_shakes))]
+		brotein_shakes_fitness = [shake.fitness for shake in brotein_shakes]
+		print("average fitness:", sum(brotein_shakes_fitness) / len(brotein_shakes_fitness))
+		baby_brotein_shakes = [Blurp([random.randint(100, 700), random.randint(100, 400)], parents=[random.choices(brotein_shakes, weights=brotein_shakes_fitness)[0],\
+		random.choices(brotein_shakes, weights=brotein_shakes_fitness)[0]]) for _ in range(30 - len(brotein_shakes))]
+		for shake in brotein_shakes:
+			shake.start_time, shake.displacement = time.time(), 0
 		brotein_shakes += baby_brotein_shakes
 		start_time = time.time()
 
