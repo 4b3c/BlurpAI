@@ -1,9 +1,19 @@
-import pygame, random
+import pygame, random, time, math
 import numpy as np
+
+sprites = {
+	"north": pygame.image.load("Sprites/Blurp/BlurpNorth.png"),
+	"south": pygame.image.load("Sprites/Blurp/BlurpSouth.png"),
+	"east": pygame.image.load("Sprites/Blurp/BlurpEast.png"),
+	"west": pygame.image.load("Sprites/Blurp/BlurpWest.png")
+}
+
+GRAY = (100, 100, 100)
+RED = (250, 0, 0)
+
 
 def sigmoid(z):
 	return 1.0/(1.0+np.exp(-z))
-
 
 
 class Network:
@@ -14,10 +24,9 @@ class Network:
 
 		if parents != None:
 			for row in range(len(self.weights)):
-				for x in range(len(weights)):
+				for x in range(len(self.weights[row])):
 					parent_for_gene = parents[random.randint(0, 1)]
-					self.weights[row][x] = parent_for_gene.weights[row][x] + random.uniform(-0.05, 0.05)
-
+					self.weights[row][x] = parent_for_gene.genes.weights[row][x] + random.uniform(-0.05, 0.05)
 
 	def feedforward(self, _input):
 		self.values[0] = _input
@@ -27,7 +36,6 @@ class Network:
 			self.values[count + 1] = clamped_value
 
 		self.output = self.values[-1]
-
 
 
 class Blurp:
@@ -46,10 +54,9 @@ class Blurp:
 		self.fitness = 0
 
 		self.genes = Network(parents)
-		
+	
 		self.speed = 3
-		self.ray_len = 3
-
+		self.ray_len = 10
 
 	def turn(self, direction):
 		if direction != self.facing:

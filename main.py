@@ -1,5 +1,5 @@
 import pygame as pyg
-from Blurp import Blurp
+from BlurpNEAT import Blurp
 import time, random
 
 pyg.init()
@@ -29,9 +29,9 @@ while True:
 
 
 	pyg.display.update()
-	clock.tick(60);
+	clock.tick(30);
 
-	if time.time() > start_time + 10:
+	if time.time() > start_time + 5:
 		for brodie in brotein_shakes:
 			# print(brodie.displacement)
 			if brodie.displacement < 50:
@@ -40,7 +40,7 @@ while True:
 		brotein_shakes_fitness = [shake.fitness for shake in brotein_shakes]
 		print("average fitness:", sum(brotein_shakes_fitness) / len(brotein_shakes_fitness))
 		baby_brotein_shakes = [Blurp([random.randint(100, 700), random.randint(100, 400)], parents=[random.choices(brotein_shakes, weights=brotein_shakes_fitness)[0],\
-		random.choices(brotein_shakes, weights=brotein_shakes_fitness)[0]]) for _ in range(30)]
+		random.choices(brotein_shakes, weights=brotein_shakes_fitness)[0]]) for _ in range(30 - len(brotein_shakes))]
 		# for shake in brotein_shakes:
 		# 	shake.start_time, shake.displacement = time.time(), 0
 		# brotein_shakes = []
@@ -54,3 +54,5 @@ while True:
 #AY_IBEQYMRXAWMV
 #AU_AEEYYCVTAWFV
 #AY_EBLASMVTPWWV
+
+# hello you are a silly goose stinker binker
