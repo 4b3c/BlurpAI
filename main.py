@@ -28,6 +28,8 @@ while True:
 		# 	print(brodie.displacement)
 
 
+	print(brotein_shakes[0].genes.output)
+
 	pyg.display.update()
 	clock.tick(30);
 
@@ -48,11 +50,4 @@ while True:
 		start_time = time.time()
 
 
-#KU_EBEMTMSXKWNV
-#KU_EBEMVMSXPWNV
-#FU_DEDMSMYSPYGV
-#AY_IBEQYMRXAWMV
-#AU_AEEYYCVTAWFV
-#AY_EBLASMVTPWWV
-
-# hello you are a silly goose stinker binker
+# https://www.desmos.com/calculator/tga6zjceag

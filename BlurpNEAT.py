@@ -26,13 +26,14 @@ class Network:
 			for row in range(len(self.weights)):
 				for x in range(len(self.weights[row])):
 					parent_for_gene = parents[random.randint(0, 1)]
-					self.weights[row][x] = parent_for_gene.genes.weights[row][x] + random.uniform(-0.05, 0.05)
+					self.weights[row][x] = parent_for_gene.genes.weights[row][x] + random.uniform(-0.35, 0.35)
 
 	def feedforward(self, _input):
 		self.values[0] = _input
 		for count, weights in enumerate(self.weights):
 			new_value = np.dot(self.values[count], weights)
-			clamped_value = sigmoid(new_value)
+			# clamped_value = sigmoid(new_value)
+			clamped_value = np.clip(new_value, -1, 1)
 			self.values[count + 1] = clamped_value
 
 		self.output = self.values[-1]
