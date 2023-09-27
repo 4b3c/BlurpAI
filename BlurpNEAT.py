@@ -33,7 +33,7 @@ class Network:
 		for count, weights in enumerate(self.weights):
 			new_value = np.dot(self.values[count], weights)
 			# clamped_value = sigmoid(new_value)
-			clamped_value = np.clip(new_value, -1, 1)
+			clamped_value = np.clip(new_value, -0.2, 0.2)
 			self.values[count + 1] = clamped_value
 
 		self.output = self.values[-1]
